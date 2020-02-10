@@ -1,0 +1,458 @@
+---
+title: "Ward Subsets"
+output: 
+    html_document:
+      fig_height: 7
+      theme: paper
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(rgdal)
+library(leaflet)
+```
+
+
+```{r import, include=FALSE, cache=TRUE}
+rgx <- "as.factor\\(vb__vf_county_code\\)([[:digit:]]+)"
+
+load("Data/geo- PA -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+PA.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+PA.pres <-
+    data.frame(
+    COUNTYFP = sout2$vb__vf_county_code,
+    PRECNAME = toupper(sout2$vb__vf_precinct_name),
+    resid.mean = sout2$residuals.mean,
+    resid.mean2 = scale(sout2$residuals.mean),
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+PA.pres <-
+    merge(PA.pres,
+    PA.cres[, 1:2],
+    by = "COUNTYFP",
+    all.x = T,
+    sort = F)
+PA.pres$resid.mean3 <- PA.pres$resid.mean + PA.pres$estimate + lout.coef2[1, 1]
+PA.pres$resid.mean4 <- scale(PA.pres$resid.mean3)
+PA.pres$estimate <- NULL
+
+phil.pres <- PA.pres[PA.pres$COUNTYFP == "101", ]
+
+rm(rgx, idx, lout.coef2, sout2, tout2)
+
+phil.ward <- readOGR("Geo/Penn/Phil/Wards.geojson")
+phil.divs <- readOGR("Geo/Penn/Phil/Divisions.geojson")
+
+phil.pres$MATCHID <-
+    sub("PHILADELPHIA ([[:digit:]]{2})-([[:digit:]]{2})",
+        "\\1\\2",
+        phil.pres$PRECNAME)
+
+phil.divs$MATCHID <- phil.divs$DIVISION_NUM
+
+phil.divs$ORDER <- 1:nrow(phil.divs)
+
+phil.divs <-
+    merge(phil.divs,
+          phil.pres,
+          by = "MATCHID",
+          all.x = T,
+          sort = F)
+
+phil.divs <- phil.divs[order(phil.divs$ORDER),]
+
+W46x60 <-
+    phil.divs[substr(phil.divs$DIVISION_NUM, 1, 2) %in% c("46", "60"), ]
+W46x60.b <- phil.ward[phil.ward$WARD_NUM %in% c("46", "60"), ]
+W46x60.c <-
+    W46x60[W46x60$DIVISION_NUM %in% c("4602",
+    "4603",
+    "4604",
+    "4605",
+    "4606",
+    "6009",
+    "6010",
+    "6011",
+    "6020",
+    "6021"),]
+
+
+W48x36 <- phil.divs[substr(phil.divs$DIVISION_NUM, 1, 2) %in% c("48", "36"),]
+W48x36.b <- phil.ward[phil.ward$WARD_NUM %in% c("48", "36"),]
+W48x36.c <-
+    W48x36[W48x36$DIVISION_NUM %in% c("4802",
+    "4803",
+    "4804",
+    "4807",
+    "4818",
+    "4820",
+    "3611",
+    "3613",
+    "3615",
+    "3619",
+    "3622",
+    "3624",
+    "3625",
+    "3627",
+    "3629",
+    "3631"),]
+
+W32x47 <- phil.divs[substr(phil.divs$DIVISION_NUM, 1, 2) %in% c("32", "47"),]
+W32x47.b <- phil.ward[phil.ward$WARD_NUM %in% c("32", "47"),]
+W32x47.c <-
+    W32x47[W32x47$DIVISION_NUM %in% c("3202",
+    "3205",
+    "3208",
+    "3209",
+    "3215",
+    "3216",
+    "3217",
+    "4707",
+    "4709",
+    "4711",
+    "4712"),]
+
+```
+
+# {.tabset .tabset-pills}
+## 46 and 60 
+```{r W46x60, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    W46x60$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab.c <-
+    paste0(
+    "<strong>",
+    W46x60.c$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W46x60.c$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W46x60.c$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W46x60.c$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W46x60.c$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+lab <-
+    paste0(
+    "<strong>",
+    W46x60$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W46x60$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W46x60$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W46x60$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W46x60$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(W46x60.c) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+        addPolygons(
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab.c,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Narrow"
+        ) %>%
+    addPolygons(
+        data = W46x60,
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Wide"
+        ) %>%
+    addPolylines(
+        data = W46x60.b,
+        fill = F,
+        weight = 2,
+        color = "red",
+        opacity = "1",
+        smoothFactor = 0.5,
+        group = "Wards"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ resid.mean4,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright",
+        group = "Legend"
+        ) %>% 
+    addLayersControl(
+        baseGroups = c("Narrow", "Wide"),
+        overlayGroups = c("Wards", "Legend"),
+        options = layersControlOptions(collapsed = F, autoZIndex = T)
+        )
+```
+
+## 48 and 36 
+```{r W48x36, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    W48x36$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab.c <-
+    paste0(
+    "<strong>",
+    W48x36.c$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W48x36.c$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W48x36.c$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W48x36.c$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W48x36.c$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+lab <-
+    paste0(
+    "<strong>",
+    W48x36$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W48x36$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W48x36$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W48x36$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W48x36$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(W48x36.c) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+        addPolygons(
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab.c,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Narrow"
+        ) %>%
+    addPolygons(
+        data = W48x36,
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Wide"
+        ) %>%
+    addPolylines(
+        data = W48x36.b,
+        fill = F,
+        weight = 2,
+        color = "red",
+        opacity = "1",
+        smoothFactor = 0.5,
+        group = "Wards"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ resid.mean4,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright",
+        group = "Legend"
+        ) %>% 
+    addLayersControl(
+        baseGroups = c("Narrow", "Wide"),
+        overlayGroups = c("Wards", "Legend"),
+        options = layersControlOptions(collapsed = F, autoZIndex = T)
+        )
+```
+
+## 32 and 47 
+```{r W32x47, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    W32x47$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab.c <-
+    paste0(
+    "<strong>",
+    W32x47.c$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W32x47.c$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W32x47.c$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W32x47.c$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W32x47.c$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+lab <-
+    paste0(
+    "<strong>",
+    W32x47$PRECNAME,
+    "</strong>",
+    "<br>Std. Resid. Mean F.E.: ",
+    round(W32x47$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(W32x47$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(W32x47$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(W32x47$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(W32x47.c) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+        addPolygons(
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab.c,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Narrow"
+        ) %>%
+    addPolygons(
+        data = W32x47,
+        fillColor = ~ pal(resid.mean4),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+            weight = 3,
+            color = "white",
+            fillOpacity = 0,
+            bringToFront = T,
+            sendToBack = T
+            ),
+        label = lab,
+        labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+            ),
+        group = "Wide"
+        ) %>%
+    addPolylines(
+        data = W32x47.b,
+        fill = F,
+        weight = 2,
+        color = "red",
+        opacity = "1",
+        smoothFactor = 0.5,
+        group = "Wards"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ resid.mean4,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright",
+        group = "Legend"
+        ) %>% 
+    addLayersControl(
+        baseGroups = c("Narrow", "Wide"),
+        overlayGroups = c("Wards", "Legend"),
+        options = layersControlOptions(collapsed = F, autoZIndex = T)
+        )
+```

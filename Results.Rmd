@@ -1,0 +1,1974 @@
+---
+title: "Results"
+author: "David deLacoste-Azizi"
+date: "7/10/2018"
+output: 
+    html_document:
+      fig_height: 7
+      theme: paper
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(rgdal)
+library(leaflet)
+```
+
+```{r import:geo, include=FALSE, cache=TRUE}
+unst.cnty <- readOGR("Geo/Counties.shp")
+
+AZ.cnty <- unst.cnty[unst.cnty$STATEFP == "04",]
+CO.cnty <- unst.cnty[unst.cnty$STATEFP == "08",]
+FL.cnty <- unst.cnty[unst.cnty$STATEFP == "12",]
+IA.cnty <- unst.cnty[unst.cnty$STATEFP == "19",]
+IL.cnty <- unst.cnty[unst.cnty$STATEFP == "17",]
+IN.cnty <- unst.cnty[unst.cnty$STATEFP == "18",]
+MO.cnty <- unst.cnty[unst.cnty$STATEFP == "29",]
+NC.cnty <- unst.cnty[unst.cnty$STATEFP == "37",]
+NH.cnty <- unst.cnty[unst.cnty$STATEFP == "33",]
+NV.cnty <- unst.cnty[unst.cnty$STATEFP == "32",]
+OH.cnty <- unst.cnty[unst.cnty$STATEFP == "39",]
+PA.cnty <- unst.cnty[unst.cnty$STATEFP == "42",]
+VA.cnty <- unst.cnty[unst.cnty$STATEFP == "51",]
+WI.cnty <- unst.cnty[unst.cnty$STATEFP == "55",]
+
+#OH.prec <- readOGR("Geo/Ohio/Precincts.shp")
+athe.prec <- readOGR("Geo/Ohio/Athe/Precincts.shp")
+augl.prec <- readOGR("Geo/Ohio/Augl/Precincts.shp")
+cuya.prec <- readOGR("Geo/Ohio/Cuya/Precincts.shp")
+haml.prec <- readOGR("Geo/Ohio/Haml/Precincts.shp")
+
+PA.prec <- readOGR("Geo/Penn/Precincts.shp")
+alle.prec <- readOGR("Geo/Penn/Alle/Precincts.geojson")
+alle.pitt <- readOGR("Geo/Penn/Alle/Pittsburgh.geojson")
+#delc.prec <- PA.prec[PA.prec@data$COUNTYFP10 == "045",]
+phil.ward <- readOGR("Geo/Penn/Phil/Wards.geojson")
+phil.divs <- readOGR("Geo/Penn/Phil/Divisions.geojson")
+
+```
+
+```{r import:res, include=FALSE}
+rgx <- "as.factor\\(vb__vf_county_code\\)([[:digit:]]+)"
+# Arizona ----
+load("Data/geo- AZ -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+AZ.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(lout.coef2, sout2, tout2)
+
+# Colorado ----
+load("Data/geo- CO -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+CO.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Florida ----
+load("Data/geo- FL -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+FL.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Iowa ----
+load("Data/geo- IA -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+IA.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Illinois ----
+load("Data/geo- IL -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+IL.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Indiana ----
+load("Data/geo- IN -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+IN.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Missouri ----
+load("Data/geo- MO -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+MO.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# North Carolina ----
+load("Data/geo- NC -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+NC.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# New Hampshire ----
+load("Data/geo- NH -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+NH.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Nevada ----
+load("Data/geo- NV -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+NV.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Ohio ----
+load("Data/geo- OH -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+OH.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+OH.pres <-
+    data.frame(
+    COUNTYFP = sout2$vb__vf_county_code,
+    PRECNAME = toupper(sout2$vb__vf_precinct_name),
+    resid.mean = sout2$residuals.mean,
+    resid.mean2 = scale(sout2$residuals.mean),
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+OH.pres <-
+    merge(OH.pres,
+    OH.cres[, 1:2],
+    by = "COUNTYFP",
+    all.x = T,
+    sort = F)
+OH.pres$resid.mean3 <- OH.pres$resid.mean + OH.pres$estimate + lout.coef2[1, 1]
+OH.pres$resid.mean4 <- scale(OH.pres$resid.mean3)
+OH.pres$estimate <- NULL
+
+athe.pres <- OH.pres[OH.pres$COUNTYFP == "009", ]
+augl.pres <- OH.pres[OH.pres$COUNTYFP == "011", ]
+haml.pres <- OH.pres[OH.pres$COUNTYFP == "061", ]
+cuya.pres <- OH.pres[OH.pres$COUNTYFP == "035", ]
+rm(idx, lout.coef2, sout2, tout2)
+
+# Pennsylvania ----
+load("Data/geo- PA -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+PA.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+PA.pres <-
+    data.frame(
+    COUNTYFP = sout2$vb__vf_county_code,
+    PRECNAME = toupper(sout2$vb__vf_precinct_name),
+    resid.mean = sout2$residuals.mean,
+    resid.mean2 = scale(sout2$residuals.mean),
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+PA.pres <-
+    merge(PA.pres,
+    PA.cres[, 1:2],
+    by = "COUNTYFP",
+    all.x = T,
+    sort = F)
+PA.pres$resid.mean3 <- PA.pres$resid.mean + PA.pres$estimate + lout.coef2[1, 1]
+PA.pres$resid.mean4 <- scale(PA.pres$resid.mean3)
+PA.pres$estimate <- NULL
+
+alle.pres <- PA.pres[PA.pres$COUNTYFP == "003", ]
+delc.pres <- PA.pres[PA.pres$COUNTYFP == "045", ]
+phil.pres <- PA.pres[PA.pres$COUNTYFP == "101", ]
+rm(idx, lout.coef2, sout2, tout2)
+
+# Virginia ----
+load("Data/geo- VA -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+VA.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+
+# Wisconsin ----
+load("Data/geo- WI -test-precincts-07022017.Rdata")
+idx <- grep(rgx, rownames(lout.coef2))
+WI.cres <-
+    data.frame(
+    COUNTYFP = sub(rgx, "\\1", rownames(lout.coef2)[idx]),
+    estimate = lout.coef2[idx, 1],
+    std.est = scale(lout.coef2[idx, 1]),
+    std.error = lout.coef2[idx, 2],
+    t.value = lout.coef2[idx, 3],
+    prob.t = lout.coef2[idx, 4],
+    row.names = NULL,
+    stringsAsFactors = F
+    )
+rm(idx, lout.coef2, sout2, tout2)
+```
+
+## Standardized Coefficient Estimates by County {.tabset}
+
+### Arizona
+```{r merge:AZ, include=FALSE}
+AZ.cnty <- merge(AZ.cnty, AZ.cres, by = "COUNTYFP", sort = F)
+
+```
+```{r map:AZ, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    AZ.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    AZ.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(AZ.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(AZ.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(AZ.cnty$std.error, 4),
+    "<br>t value: ",
+    round(AZ.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(AZ.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(AZ.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Colorado
+```{r merge:CO, include=FALSE}
+CO.cnty <- merge(CO.cnty, CO.cres, by = "COUNTYFP", sort = F)
+
+```
+```{r map:CO, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    CO.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    CO.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(CO.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(CO.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(CO.cnty$std.error, 4),
+    "<br>t value: ",
+    round(CO.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(CO.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(CO.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Florida
+```{r merge:FL, include=FALSE}
+FL.cnty <- merge(FL.cnty, FL.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:FL, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    FL.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    FL.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(FL.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(FL.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(FL.cnty$std.error, 4),
+    "<br>t value: ",
+    round(FL.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(FL.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(FL.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Iowa
+```{r merge:IA, include=FALSE}
+IA.cnty <- merge(IA.cnty, IA.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:IA, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    IA.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    IA.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(IA.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(IA.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(IA.cnty$std.error, 4),
+    "<br>t value: ",
+    round(IA.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(IA.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(IA.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Illinois
+```{r merge:IL, include=FALSE}
+IL.cnty <- merge(IL.cnty, IL.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:IL, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    IL.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    IL.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(IL.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(IL.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(IL.cnty$std.error, 4),
+    "<br>t value: ",
+    round(IL.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(IL.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(IL.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Indiana
+```{r merge:IN, include=FALSE}
+IN.cnty@data <-
+    merge(IN.cnty@data, IN.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:IN, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    IN.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    IN.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(IN.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(IN.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(IN.cnty$std.error, 4),
+    "<br>t value: ",
+    round(IN.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(IN.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(IN.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Missouri
+```{r merge:MO, include=FALSE}
+MO.cnty@data <-
+    merge(MO.cnty@data, MO.cres, by = "COUNTYFP", sort = F)
+
+```
+```{r map:MO, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    MO.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    MO.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(MO.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(MO.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(MO.cnty$std.error, 4),
+    "<br>t value: ",
+    round(MO.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(MO.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(MO.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### North Carolina
+```{r merge:NC, include=FALSE}
+NC.cnty@data <-
+    merge(NC.cnty@data, NC.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:NC, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    NC.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    NC.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(NC.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(NC.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(NC.cnty$std.error, 4),
+    "<br>t value: ",
+    round(NC.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(NC.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(NC.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### New Hampshire
+```{r merge:NH, include=FALSE}
+NH.cnty@data <-
+    merge(NH.cnty@data, NH.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:NH, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    NH.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    NH.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(NH.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(NH.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(NH.cnty$std.error, 4),
+    "<br>t value: ",
+    round(NH.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(NH.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(NH.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Nevada
+```{r merge:NV, include=FALSE}
+NV.cnty <- merge(NV.cnty, NV.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:NV, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    NV.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    NV.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(NV.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(NV.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(NV.cnty$std.error, 4),
+    "<br>t value: ",
+    round(NV.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(NV.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(NV.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Ohio
+```{r merge:OH, include=FALSE}
+OH.cnty <- merge(OH.cnty, OH.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:OH, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    OH.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    OH.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(OH.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(OH.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(OH.cnty$std.error, 4),
+    "<br>t value: ",
+    round(OH.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(OH.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(OH.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Pennsylvania
+```{r merge:PA, include=FALSE}
+PA.cnty <- merge(PA.cnty, PA.cres, by = "COUNTYFP", sort = F)
+
+```
+```{r map:PA, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    PA.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    PA.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(PA.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(PA.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(PA.cnty$std.error, 4),
+    "<br>t value: ",
+    round(PA.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(PA.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(PA.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Virginia
+```{r merge:VA, include=FALSE}
+VA.cnty <- merge(VA.cnty, VA.cres, by = "COUNTYFP", sort = F)
+```
+```{r map:VA, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    VA.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    VA.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(VA.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(VA.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(VA.cnty$std.error, 4),
+    "<br>t value: ",
+    round(VA.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(VA.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(VA.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+### Wisconsin
+```{r merge:WI, include=FALSE}
+WI.cnty@data <-
+    merge(WI.cnty@data, WI.cres, by = "COUNTYFP", sort = F)
+
+```
+```{r map:WI, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    WI.cnty$std.est,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <- paste0(
+    "<strong>",
+    WI.cnty$NAME,
+    "</strong><br>Std. Estimate: ",
+    round(WI.cnty$std.est, 4),
+    "<br>Estimate: ",
+    round(WI.cnty$estimate, 4),
+    "<br>Std. Error: ",
+    round(WI.cnty$std.error, 4),
+    "<br>t value: ",
+    round(WI.cnty$t.value, 4),
+    "<br>P(t): ",
+    round(WI.cnty$prob.t, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(WI.cnty) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.est),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Counties"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.est,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+## Standardized Average Residuals by Voting District {.tabset} 
+
+### Pennsylvania {.tabset}
+
+#### Allegheny
+```{r res:alle, include=FALSE}
+alle.pres$MATCHID <- gsub(" ", "-", alle.pres$PRECNAME)
+alle.pres$MATCHID <-
+    gsub("-([[:digit:]])-", "-0\\1-", alle.pres$MATCHID)
+alle.pres$MATCHID <-
+    gsub("-([[:digit:]])$", "-0\\1", alle.pres$MATCHID)
+alle.pres$MATCHID <- gsub("-BORO", "-BR", alle.pres$MATCHID)
+alle.pres$MATCHID <- gsub("-VLG", "-VILL", alle.pres$MATCHID)
+alle.pres$MATCHID <- gsub("-HEIGHTS", "-HTS", alle.pres$MATCHID)
+alle.pres$MATCHID[alle.pres$MATCHID == "BRADFORDWOOD"] <-
+    "BRADFORD-WOODS"
+alle.pres$MATCHID[alle.pres$MATCHID == "CHALFANT"] <-
+    "CHALFANT-01"
+alle.pres$MATCHID <-
+    gsub("GREENTREE-", "GREEN-TREE-", alle.pres$MATCHID)
+
+alle.prec$MATCHID <- gsub(" WARD | DIST ", " ", alle.prec$Muni_War_1)
+alle.prec$MATCHID <- gsub(" ", "-", alle.prec$MATCHID)
+alle.prec$MATCHID <- gsub("-([[:digit:]])-", "-0\\1-", alle.prec$MATCHID)
+alle.prec$MATCHID <- gsub("-([[:digit:]])$", "-0\\1", alle.prec$MATCHID)
+alle.prec$MATCHID <- gsub("-WRD-|-WD-", "-", alle.prec$MATCHID)
+alle.prec$MATCHID <- gsub("ELIZABETH-TP-", "ELIZABETH-", alle.prec$MATCHID)
+alle.prec$MATCHID <- gsub("-BR-", "-", alle.prec$MATCHID)
+alle.prec$MATCHID[alle.prec@data$FID == 878] <- "COLLIER-01"
+alle.prec$MATCHID[alle.prec@data$FID == 689] <- "COLLIER-02"
+alle.prec$MATCHID[alle.prec@data$FID == 710] <- "COLLIER-03"
+alle.prec$MATCHID[alle.prec@data$FID == 943] <- "COLLIER-04"
+alle.prec$MATCHID[alle.prec@data$FID == 1321] <- "COLLIER-05"
+alle.prec$MATCHID[alle.prec@data$FID == 1320] <- "COLLIER-06"
+alle.prec$MATCHID <- gsub("SPRINGDAL-", "SPRINGDALE-", alle.prec$MATCHID)
+alle.prec$MATCHID[alle.prec$MATCHID == "MCDONALD"] <- "MCDONALD-05"
+alle.prec$MATCHID[alle.prec$MATCHID == "W-ELIZABETH"] <- "W-ELIZABETH-01"
+
+alle.prec$ORDER <- 1:nrow(alle.prec)
+
+alle.prec <-
+    merge(
+    alle.prec,
+    alle.pres,
+    by = "MATCHID",
+    all.x = T,
+    sort = F
+    )
+
+alle.prec <- alle.prec[order(alle.prec$ORDER), ]
+```
+```{r map:alle, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    alle.pres$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    alle.pres$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    alle.prec$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(alle.prec$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(alle.prec$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(alle.prec$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(alle.prec$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(alle.prec) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addPolylines(
+    data = alle.pitt,
+    fill = F,
+    weight = 1,
+    color = "red",
+    opacity = "1",
+    smoothFactor = 0.5,
+    group = "City Border"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    overlayGroups = c("City Border"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
+
+#### Philadelphia
+```{r res:phil, include=FALSE}
+phil.pres$MATCHID <-
+    sub("PHILADELPHIA ([[:digit:]]{2})-([[:digit:]]{2})",
+        "\\1\\2",
+        phil.pres$PRECNAME)
+
+phil.divs$MATCHID <- phil.divs$DIVISION_NUM
+
+phil.divs$ORDER <- 1:nrow(phil.divs)
+
+phil.divs <-
+    merge(phil.divs,
+          phil.pres,
+          by = "MATCHID",
+          all.x = T,
+          sort = F)
+
+phil.divs <- phil.divs[order(phil.divs$ORDER),]
+```
+```{r map:phil, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    phil.divs$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    phil.divs$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    phil.divs$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(phil.divs$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(phil.divs$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(phil.divs$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(phil.divs$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(phil.divs) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addPolylines(
+    data = phil.ward,
+    fill = F,
+    weight = 1,
+    color = "red",
+    opacity = "1",
+    smoothFactor = 0.5,
+    group = "Wards"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    overlayGroups = c("Wards"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
+
+### Ohio {.tabset}
+```{r res:ohiop, eval=FALSE, include=FALSE}
+OH.pres$std.residuals <- scale(OH.pres$residuals.mean)
+
+OH.pres$PRECID <-
+    sub(
+    ".+\\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1\\2",
+    OH.pres$vb__vf_precinct_name
+    )
+
+OH.prec@data$PRECID <-
+    sub(
+    ".+\\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1\\2",
+    OH.prec@data$precinctna
+    )
+
+OH.prec@data$ORDER <- 1:nrow(OH.prec@data)
+
+OH.prec@data <-
+    merge(
+    OH.prec@data,
+    OH.pres,
+    by = "PRECID",
+    all.x = T,
+    sort = F
+    )
+
+OH.prec@data <- OH.prec@data[order(OH.prec@data$ORDER),]
+```
+```{r map:ohiop, eval=FALSE, include=FALSE, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    OH.pres$std.residuals,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    OH.prec@data$precinctna,
+    "</strong><br>Std. Residual: ",
+    round(OH.prec@data$std.residuals, 4),
+    "<br>Residual Mean: ",
+    round(OH.prec@data$residuals.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+    
+leaflet(OH.prec) %>% 
+    addProviderTiles("CartoDB", group = "CartoDB") %>% 
+    addPolygons(
+        fillColor = ~ pal(std.residuals),
+        weight = 1,
+        opacity = 1,
+        color = "#000000",
+        fillOpacity = 1,
+        smoothFactor = 0.5,
+        highlight = highlightOptions(
+        weight = 3,
+        color = "white",
+        fillOpacity = 0,
+        bringToFront = T,
+        sendToBack = T
+        ),
+        label = lab,
+        labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+        ),
+        group = "Divisions"
+        ) %>% 
+    addLegend(
+        pal = pal,
+        values = ~ std.residuals,
+        opacity = 1,
+        title = NULL,
+        position = "bottomright"
+        )
+```
+
+#### Athens
+```{r res:athe, include=FALSE}
+athe.pres$MATCHID <-
+    sub("(.+) \\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1",
+    athe.pres$PRECNAME)
+
+athe.pres$MATCHID <- gsub(" VLG", "", athe.pres$MATCHID)
+athe.pres$MATCHID <- gsub("ALEXANDER", "ALEX", athe.pres$MATCHID)
+athe.pres$MATCHID <- gsub(" VILLAGE", "", athe.pres$MATCHID)
+
+athe.prec$MATCHID <- gsub("TWP.?", "TOWNSHIP", athe.prec$NAME)
+athe.prec$MATCHID <- gsub(" VILLAGE", "", athe.prec$MATCHID)
+
+athe.prec <- spTransform(athe.prec, CRSobj = CRS(proj4string(OH.cnty)))
+
+athe.prec$ORDER <- 1:nrow(athe.prec)
+
+athe.prec <-
+    merge(
+    athe.prec,
+    athe.pres,
+    by = "MATCHID",
+    all.x = T,
+    sort = F
+    )
+
+athe.prec <- athe.prec[order(athe.prec$ORDER),]
+```
+```{r map:athe, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    athe.pres$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    athe.pres$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    athe.prec$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(athe.prec$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(athe.prec$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(athe.prec$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(athe.prec$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(athe.prec) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
+
+#### Auglaize
+```{r res:augl, include=FALSE}
+augl.pres$MATCHID <-
+    sub("(.+) \\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1",
+    augl.pres$PRECNAME)
+
+augl.pres$MATCHID <- gsub("CRIDERS ", "CRIDERSVILLE ", augl.pres$MATCHID)
+
+augl.prec$MATCHID <- levels(augl.prec$PREC_NAME)[augl.prec$PREC_NAME]
+
+augl.prec$ORDER <- 1:nrow(augl.prec)
+
+augl.prec <-
+    merge(
+    augl.prec,
+    augl.pres,
+    by = "MATCHID",
+    all.x = T,
+    sort = F
+    )
+
+augl.prec <- augl.prec[order(augl.prec$ORDER),]
+```
+```{r map:augl, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    augl.pres$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    augl.pres$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    augl.prec$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(augl.prec$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(augl.prec$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(augl.prec$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(augl.prec$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(augl.prec) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
+
+#### Cuyahoga
+```{r res:cuya, include=FALSE}
+cuya.pres$MATCHID <-
+    sub(
+    ".+\\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1\\2",
+    cuya.pres$PRECNAME
+    )
+
+cuya.prec <- spTransform(cuya.prec, CRSobj = CRS(proj4string(OH.cnty)))
+
+cuya.prec$MATCHID <- paste0(18, cuya.prec$GEN_FIELD)
+
+cuya.prec$ORDER <- 1:nrow(cuya.prec)
+
+cuya.prec <-
+    merge(
+    cuya.prec,
+    cuya.pres,
+    by = "MATCHID",
+    all.x = T,
+    sort = F
+    )
+
+cuya.prec <- cuya.prec[order(cuya.prec$ORDER),]
+```
+```{r map:cuya, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    cuya.pres$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    cuya.pres$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    cuya.prec$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(cuya.prec$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(cuya.prec$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(cuya.prec$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(cuya.prec$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(cuya.prec) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
+
+#### Hamilton
+```{r res:haml, include=FALSE}
+haml.pres$MATCHID <-
+    sub("(.+) \\(([[:digit:]]{2}).*([[:alpha:]]{3})\\)",
+    "\\1",
+    haml.pres$PRECNAME)
+
+haml.prec$MATCHID <- levels(haml.prec$PRC_NAME)[haml.prec$PRC_NAME]
+
+haml.prec$ORDER <- 1:nrow(haml.prec)
+
+haml.prec <-
+    merge(
+    haml.prec,
+    haml.pres,
+    by = "MATCHID",
+    all.x = T,
+    sort = F
+    )
+
+haml.prec <- haml.prec[order(haml.prec$ORDER),]
+```
+```{r map:haml, out.width="100%"}
+pal <- colorBin(
+    "Greys",
+    haml.pres$resid.mean4,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+pal2 <- colorBin(
+    "Greys",
+    haml.pres$resid.mean2,
+    na.color = "white",
+    bins = c(-Inf, -2, -1, 0, 1, 2, Inf)
+    )
+
+lab <-
+    paste0(
+    "<strong>",
+    haml.prec$PRECNAME,
+    "</strong><br>Std. Resid. Mean F.E.: ",
+    round(haml.prec$resid.mean4, 4),
+    "<br>Std. Resid. Mean: ",
+    round(haml.prec$resid.mean2, 4),
+    "<br>Resid. Mean F.E.: ",
+    round(haml.prec$resid.mean3, 4),
+    "<br>Resid. Mean: ",
+    round(haml.prec$resid.mean, 4)
+    ) %>% lapply(htmltools::HTML)
+
+leaflet(haml.prec) %>%
+    addProviderTiles("CartoDB", group = "CartoDB") %>%
+    addPolygons(
+    fillColor = ~ pal(resid.mean4),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "Fixed Effects"
+    ) %>%
+    addPolygons(
+    fillColor = ~ pal2(resid.mean2),
+    weight = 1,
+    opacity = 1,
+    color = "#000000",
+    fillOpacity = 1,
+    smoothFactor = 0.5,
+    highlight = highlightOptions(
+    weight = 3,
+    color = "white",
+    fillOpacity = 0,
+    bringToFront = T,
+    sendToBack = T
+    ),
+    label = lab,
+    labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+    ),
+    group = "No Fixed Effects"
+    ) %>%
+    addLegend(
+    pal = pal,
+    values = ~ resid.mean4,
+    opacity = 1,
+    title = NULL,
+    position = "bottomright",
+    group = "Fixed Effects"
+    ) %>% hideGroup("No Fixed Effects") %>%
+    addLayersControl(
+    baseGroups = c("Fixed Effects", "No Fixed Effects"),
+    options = layersControlOptions(collapsed = F)
+    )
+```
