@@ -18,3 +18,5 @@ The data for this project are confidential, so you can explore the results but I
 
 ## Data Access
 All public data are in the repository, or available [at this link](https://upenn.box.com/v/project-barnstorm). However, none of the source data are included, nor are the raw regression results.
+
+<p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/101237072ns.gif" /></p>
