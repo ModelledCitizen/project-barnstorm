@@ -9,6 +9,8 @@
 # Project Barnstorm
 Evaluating campaign contact techniques with interactive maps.
 
+[Click here for the GitHub repo.](https://github.com/UnlikelyVolcano/project-barnstorm)
+
 ## Description
 The data for this project are confidential, so you can explore the results but I can't provide you with any context.
 - [Main Results](https://unlikelyvolcano.github.io/project-barnstorm/Results.html)
