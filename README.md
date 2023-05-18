@@ -9,12 +9,12 @@
 # Project Barnstorm
 Evaluating campaign contact techniques with interactive maps.
 
-[Click here for the GitHub repo.](https://github.com/ModelledCitizen/project-barnstorm)
+[Click here for the GitHub repo.](https://github.com/UnlikelyVolcano/project-barnstorm)
 
 ## Description
 The data for this project are confidential, so you can explore the results but I can't provide you with any context.
-- [Main Results](https://www.modelledcitizen.com/project-barnstorm/Results.html)
-- [Ward Subsets](https://www.modelledcitizen.com/project-barnstorm/Ward_Subsets.html)
+- [Main Results](https://www.davidazizi.org/project-barnstorm/Results.html)
+- [Ward Subsets](https://www.davidazizi.org/project-barnstorm/Ward_Subsets.html)
 
 ## Data Access
-All public data are in the repository, or available [at this link](https://upenn.box.com/v/project-barnstorm). However, none of the source data are included, nor are the raw regression results.
+Please email to request access to the data.
